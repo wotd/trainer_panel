@@ -1,8 +1,8 @@
 # Dockerfile.rails
 FROM ruby:alpine3.13 AS rails-app
 
-ARG USER_ID
-ARG GROUP_ID
+ENV USER_ID 1000
+ENV GROUP_ID 1000
 
 RUN adduser --disabled-password --gecos '' --uid $USER_ID user
 
