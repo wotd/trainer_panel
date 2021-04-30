@@ -6,14 +6,32 @@
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
+pool: Home-ARM
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+- stage: Build
+  displayName: Build ${{ variables.app_language }} image
+  jobs:  
+  - job: DockerImageBuild
+    displayName: Build and push Docker image
+    steps:
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'docker-hub'
+          repository: '$(docker_repo)'
+          command: 'buildAndPush'
+          Dockerfile: '**/Dockerfile'
+          buildContext: '.'
+          tags: 'rpi-$(Build.BuildId)'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- stage: DevDeployment
+  displayName: Dev Deployment
+  jobs:
+    - job: PrepareDeployment
+      displayName: Prepare k8s deployment file
+      steps:
+      - template: templates/deployment.yaml   
+        parameters:
+          database_host: 'postgres.database'
+          database_port: '5432'
+          database_name: 'trainer_panel.db'

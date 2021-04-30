@@ -1,0 +1,20 @@
+parameters:
+    database_port: ''
+    docker_repo: 'wotd/trainer-panel'
+    database_name: ''
+    database_host: ''
+
+
+steps:
+- script: |
+    export DATABASE_HOST=${{ parameters.database_host }}
+    export DATABASE_PORT=${{ parameters.database_port }}
+    export DATABASE_NAME=${{ parameters.database_name }}
+    export APP_NAME=trainer-panel
+    export NAMESPACE=ns-${APP_NAME}
+    export CONTAINER_IMAGE=$(docker_repo):$(Build.BuildId)
+    
+    envsubst < deployments/application_template.yml > deployments/tp.yml
+    kubectl apply -f deployments/tp.yml
+- publish: deployments/tp.yml
+  artifact: TPDeployment
