@@ -15,6 +15,6 @@ steps:
     export CONTAINER_IMAGE=$(docker_repo):$(Build.BuildId)
     
     envsubst < k8s-deployments/application_template.yaml > k8s-deployments/tp.yaml
-    kubectl apply -f deployments/tp.yaml
-- publish: deployments/tp.yaml
+    kubectl apply -f k8s-deployments/tp.yaml
+- publish: k8s-deployments/tp.yaml
   artifact: TPDeployment
