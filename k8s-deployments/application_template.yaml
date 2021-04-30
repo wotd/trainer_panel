@@ -1,45 +1,32 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: trainer-panel
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: tp-secrets
-  namespace: trainer-panel
-type: Opaque
-data:
-  DB_USER: <USERNAME>
-  DB_PASSWORD: <PASSWORD>
-  SECRET_TOKEN: <TOKEN>
+  name: ${NAMESPACE}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: trainer-panel
-  namespace: trainer-panel
+  name: ${APP_NAME}
+  namespace: ${NAMESPACE}
 spec:
   selector:
     matchLabels:
-      app: trainer-panel
+      app: ${APP_NAME}
   template:
     metadata:
       labels:
-        app: trainer-panel
+        app: ${APP_NAME}
     spec:
       containers:
-      - name: trainer-panel
+      - name: ${APP_NAME}
         image: wotd/trainer-panel:4
         env:
           - name: USER_ID
             value: '1000'
           - name: GROUP_ID
             value: '1000'
-          - name: DB_NAME
-            value: trainer_panel.db
           - name: DATABASE_URL
-            value: 'postgresql://${DB_USER}:${DB_PASSWORD}@postgres.database:5432/${DB_NAME}?encoding=utf8&pool=5&timeout=5000'
+            value: 'postgresql://${DB_USER}:${DB_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?encoding=utf8&pool=5&timeout=5000'
         envFrom:
           - secretRef:
               name: tp-secrets
@@ -53,11 +40,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: trainer-panel
-  namespace: trainer-panel
+  name: ${APP_NAME}
+  namespace: ${NAMESPACE}
 spec:
   selector:
-    app: trainer-panel
+    app: ${APP_NAME}
   ports:
   - port: 3000
     targetPort: 3000

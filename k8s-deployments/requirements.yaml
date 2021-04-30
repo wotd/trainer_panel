@@ -10,7 +10,7 @@ metadata:
   namespace: database
 type: Opaque
 data:
-  POSTGRES_USER: <USER>
+  POSTGRES_USER: <USERNAME>
   POSTGRES_PASSWORD: <PASSWORD>
 ---
 apiVersion: apps/v1
@@ -60,3 +60,14 @@ spec:
   ports:
   - port: 5432
     targetPort: 5432
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tp-secrets
+  namespace: trainer-panel
+type: Opaque
+data:
+  DB_USER: <USERNAME>
+  DB_PASSWORD: <PASSWORD>
+  SECRET_TOKEN: <TOKEN>
